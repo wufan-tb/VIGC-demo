@@ -110,8 +110,7 @@ def _update(
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Demo")
-    parser.add_argument("--device1", default="0")
-    parser.add_argument("--device2", default="0")
+    parser.add_argument("--device", default="0")
     parser.add_argument("--ckpt_minigpt4", default="")
     parser.add_argument("--ckpt_instruct_blip", default="")
     args = parser.parse_args()
@@ -119,15 +118,14 @@ def parse_arguments():
 
 
 def prepare_models(args):
-    device1 = torch.device(f"cuda:{args.device1}") if torch.cuda.is_available() else "cpu"
-    device2 = torch.device(f"cuda:{args.device2}") if torch.cuda.is_available() else "cpu"
+    device = torch.device(f"cuda:{args.device}") if torch.cuda.is_available() else "cpu"
 
     print('Loading minigpt4 model...')
     minigpt4_model, minigpt4_processors, _ = load_model_and_preprocess(
         name=MODEL_NAME,
         model_type=MODEL_TYPE,
         is_eval=True,
-        device=device1
+        device=device
     )
 
     minigpt4_model.load_checkpoint(MODEL_CKPT["minigpt4"]["pretrained"])
@@ -139,16 +137,20 @@ def prepare_models(args):
         name=MODEL_NAME,
         model_type=MODEL_TYPE,
         is_eval=True,
-        device=device2,
+        device=device,
     )
 
     instruct_blip_model.load_checkpoint(MODEL_CKPT["instruct_blip"]["pretrained"])
     instruct_blip_model.load_checkpoint(args.ckpt_instruct_blip or MODEL_CKPT["instruct_blip"]["finetuned"])
 
+    llm_model_to_del = instruct_blip_model.llm_model
+    instruct_blip_model.llm_model = minigpt4_model.llm_model
+    del llm_model_to_del
+    torch.cuda.empty_cache()
+
     print('Loading model done!')
     res = {
-        "device1": device1,
-        "device2": device2,
+        "device": device,
         "minigpt4_model": minigpt4_model,
         "instruct_blip_model": instruct_blip_model,
         "minigpt4_processors": minigpt4_processors,
@@ -158,8 +160,7 @@ def prepare_models(args):
 
 
 def inference(all_elements):
-    device1 = all_elements["device1"]
-    device2 = all_elements["device2"]
+    device = all_elements["device"]
     minigpt4_model = all_elements["minigpt4_model"]
     instruct_blip_model = all_elements["instruct_blip_model"]
     minigpt4_processors = all_elements["minigpt4_processors"]
@@ -186,11 +187,9 @@ def inference(all_elements):
         if use_minigpt4:
             model = minigpt4_model
             vis_processors = minigpt4_processors
-            device = device1
         else:
             model = instruct_blip_model
             vis_processors = instruct_blip_vis_processors
-            device = device2
 
         print(image, question, task, min_len, max_len, beam_size, model_type, temperature)
         image = vis_processors["eval"](image).unsqueeze(0).to(device)
