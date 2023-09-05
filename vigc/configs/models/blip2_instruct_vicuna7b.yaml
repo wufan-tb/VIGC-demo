@@ -9,8 +9,8 @@ model:
   load_pretrained: True
 
 #  pretrained: "https://storage.googleapis.com/sfr-vision-language-research/LAVIS/models/InstructBLIP/instruct_blip_vicuna7b_trimmed.pth"
-  pretrained: "/mnt/petrelfs/hanxiao/input/instruct-blip/instruct_blip_vicuna7b_trimmed.pth"
-  finetuned: ""
+  pretrained: "/home/xlab-app-center/vigc-models/instruct_blip_vicuna7b_trimmed.pth"
+  finetuned: "/home/xlab-app-center/vigc-models/vigc7b_instructblip_llava.pth"
 
   # vit encoder
   image_size: 224
@@ -23,7 +23,7 @@ model:
   num_query_token: 32
 
   # path to Vicuna checkpoint
-  llm_model: "/mnt/petrelfs/hanxiao/vicuna-7b"
+  llm_model: "/home/xlab-app-center/vicuna-7b"
 
   # generation configs
   prompt: ""

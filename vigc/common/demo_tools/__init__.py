@@ -7,11 +7,11 @@ MODEL_NAME = "blip2_vicuna_instruct"
 
 MODEL_CKPT = {
     "minigpt4": {
-        "finetuned": "/mnt/petrelfs/share_data/wangbin/mllm/vigc/models/minigpt4_7b_d3e4.pth",
-        "pretrained": "/mnt/petrelfs/hanxiao/input/instruct-blip/blip2_pretrained_flant5xxl.pth"},
+        "finetuned": "/home/xlab-app-center/vigc-models/vigc7b_minigpt4_llava.pth",
+        "pretrained": "/home/xlab-app-center/vigc-models/blip2_pretrained_flant5xxl.pth"},
     "instruct_blip": {
-        "finetuned": "/mnt/petrelfs/share_data/wangbin/mllm/vigc/models/bak_0805/instruct-blip_7b_best.pth",
-        "pretrained": "/mnt/petrelfs/hanxiao/input/instruct-blip/instruct_blip_vicuna7b_trimmed.pth"},
+        "finetuned": "/home/xlab-app-center/vigc-models/vigc7b_instructblip_llava.pth",
+        "pretrained": "/home/xlab-app-center/vigc-models/instruct_blip_vicuna7b_trimmed.pth"},
 }
 
 VIGA_INSTRUCTIONS = {

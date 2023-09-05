@@ -8,8 +8,8 @@ model:
   load_finetuned: True
   load_pretrained: True
 
-  pretrained: "/mnt/petrelfs/hanxiao/input/instruct-blip/blip2_pretrained_flant5xxl.pth"
-  finetuned: "/mnt/petrelfs/hanxiao/input/instruct-blip/minigpt4_proj_7b.pth"
+  pretrained: "/home/xlab-app-center/vigc-models/blip2_pretrained_flant5xxl.pth"
+  finetuned: "/home/xlab-app-center/vigc-models/vigc7b_minigpt4_llava.pth"
 
   # vit encoder
   image_size: 224
@@ -22,7 +22,7 @@ model:
   num_query_token: 32
 
   # path to Vicuna checkpoint
-  llm_model: "/mnt/petrelfs/hanxiao/vicuna-7b"
+  llm_model: "/home/xlab-app-center/vicuna-7b"
 
   # generation configs
   prompt: ""

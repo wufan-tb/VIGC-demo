@@ -19,7 +19,7 @@ class Blip2VicunaInstruct(Blip2Base):
     BLIP2 Vicuna model.
     Supported model types:
         - vicuna7b
-        - vicuna13b
+        - minigpt4_vicuna7b
     Usage:
         >>> from vigc.models import load_model
         >>> model = load_model("blip2_vicuna_instruct", "vicuna7b")
@@ -27,9 +27,7 @@ class Blip2VicunaInstruct(Blip2Base):
 
     PRETRAINED_MODEL_CONFIG_DICT = {
         "vicuna7b": "configs/models/blip2_instruct_vicuna7b.yaml",
-        "vicuna13b": "configs/models/blip2_instruct_vicuna13b.yaml",
         "minigpt4_vicuna7b": "configs/models/mini_gpt4_vicuna7b.yaml",
-        "minigpt4_vicuna13b": "configs/models/mini_gpt4_vicuna13b.yaml",
     }
 
     def __init__(
