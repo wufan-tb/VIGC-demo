@@ -1,3 +1,4 @@
+import vigc.common.download_models
 import gradio as gr
 import os
 from vigc.common.demo_tools import inference, parse_arguments, prepare_models
