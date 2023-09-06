@@ -33,6 +33,13 @@ download(
     model_repo="hanxiao/vicuna-7b-v1_1",
     model_name="model_part1",
     output=LOCAL_ROOT["hanxiao/vicuna-7b-v1_1"],
+    overwrite=False
+)
+
+download(
+    model_repo="hanxiao/vicuna-7b-v1_1",
+    model_name="model_part2",
+    output=LOCAL_ROOT["hanxiao/vicuna-7b-v1_1"],
     overwrite=True
 )
 
