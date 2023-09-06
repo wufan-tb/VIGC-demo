@@ -3,7 +3,7 @@ import os
 
 ak = os.getenv("OPENXLAB_AK")
 sk = os.getenv("OPENXLAB_SK")
-openxlab.login(ak, sk)
+openxlab.login(ak, sk, re_login=True)
 
 from openxlab.model import download
 
