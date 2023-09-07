@@ -216,10 +216,14 @@ def inference(all_elements):
 
         for i in range(answer_length + 1):
             this_sample = {"prompt": all_res["current_text"], "image": image}
+            if i < answer_length:
+                max_len_ = min(150 if in_section else 80, max_len)
+            else:
+                max_len_ = max_len
             answers = model.generate(
                 this_sample,
                 num_beams=beam_size,
-                max_length=max_len,
+                max_length=max_len_,
                 min_length=min_len,
                 temperature=temperature,
             )
