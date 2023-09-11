@@ -77,7 +77,8 @@ if __name__ == '__main__':
                         )
                 with gr.Accordion("Examples:"):
                     gr.Examples(
-                        examples=[os.path.join(EXAMPLE_ROOT, _) for _ in os.listdir(EXAMPLE_ROOT)],
+                        examples=[os.path.join(EXAMPLE_ROOT, _) for _ in os.listdir(EXAMPLE_ROOT) if
+                                  _.startswith("example_")],
                         inputs=image_input,
                     )
 
