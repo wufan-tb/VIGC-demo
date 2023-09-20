@@ -9,15 +9,19 @@ from openxlab.model import download
 
 LLM_ROOT = "/home/xlab-app-center/vicuna-7b"
 VIGC_ROOT = "/home/xlab-app-center/vigc-models"
+BERT_ROOT = "/home/xlab-app-center/bert-base-uncased"
 
 while not os.path.exists(LLM_ROOT):
     os.makedirs(LLM_ROOT, exist_ok=True)
 while not os.path.exists(VIGC_ROOT):
     os.makedirs(VIGC_ROOT, exist_ok=True)
+while not os.path.exists(BERT_ROOT):
+    os.makedirs(BERT_ROOT, exist_ok=True)
 
 LOCAL_ROOT = {
     "hanxiao/vicuna-7b-v1_1": LLM_ROOT,
-    "hanxiao/VIGC_demo": VIGC_ROOT
+    "hanxiao/VIGC_demo": VIGC_ROOT,
+    "hanxiao/bert-base-uncased": BERT_ROOT,
 }
 
 DOWNLOAD_INFO = {
@@ -26,7 +30,10 @@ DOWNLOAD_INFO = {
         "model_part2", "index", "special_tokens_map", "tokenizer.model", "tokenizer_config"],
     "hanxiao/VIGC_demo": [
         "instruct-blip-finetuned", "minigpt4-finetuned", "instruct-blip-pretrained",
-        "minigpt4-pretrained"]
+        "minigpt4-pretrained"],
+    "hanxiao/bert-base-uncased": [
+        "config", "model_weight", "tokenizer", "tokenizer_config", "vocab"
+    ]
 }
 
 for model_repo in DOWNLOAD_INFO:
