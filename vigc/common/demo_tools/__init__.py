@@ -192,7 +192,10 @@ def inference(all_elements):
             vis_processors = instruct_blip_vis_processors
 
         print(image, question, task, min_len, max_len, beam_size, model_type, temperature)
-        image = vis_processors["eval"](image).unsqueeze(0).to(device)
+        try:
+            image = vis_processors["eval"](image).unsqueeze(0).to(device)
+        except Exception as e:
+            return str(e)
         instructions = [prompt]
         question = question.strip().capitalize()
         if question:
