@@ -164,7 +164,8 @@ def prepare_models(args):
         "minigpt4_model": minigpt4_model,
         "instruct_blip_model": instruct_blip_model,
         "minigpt4_processors": minigpt4_processors,
-        "instruct_blip_vis_processors": instruct_blip_vis_processors
+        "instruct_blip_vis_processors": instruct_blip_vis_processors,
+        "vicuna_llm": llm_model
     }
     return res
 
@@ -174,6 +175,7 @@ def inference(all_elements):
     minigpt4_model = all_elements["minigpt4_model"]
     instruct_blip_model = all_elements["instruct_blip_model"]
     minigpt4_processors = all_elements["minigpt4_processors"]
+    llm_model = all_elements["vicuna_llm"]
     instruct_blip_vis_processors = all_elements["instruct_blip_vis_processors"]
 
     def _inner_f(
@@ -239,6 +241,7 @@ def inference(all_elements):
                 max_length=max_len_,
                 min_length=min_len,
                 temperature=temperature,
+                llm_model=llm_model
             )
             _update(all_res, answers, step=i, answer_length=answer_length, in_section=in_section,
                     last_infer_all=last_infer_all)

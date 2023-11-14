@@ -317,6 +317,7 @@ class Blip2VicunaInstruct(Blip2Base):
             length_penalty=1,
             num_captions=1,
             temperature=1,
+            llm_model=None
     ):
 
         if "prompt" in samples.keys():
@@ -331,8 +332,8 @@ class Blip2VicunaInstruct(Blip2Base):
         self.llm_tokenizer_for_generate.padding_side = "right"
 
         self.llm_tokenizer_for_generate.pad_token = self.llm_tokenizer_for_generate.eos_token  # debug
-        ori_pad_token_id = self.llm_model.config.pad_token_id
-        self.llm_model.config.pad_token_id = self.llm_model.config.eos_token_id  # debug
+        ori_pad_token_id = llm_model.config.pad_token_id
+        llm_model.config.pad_token_id = llm_model.config.eos_token_id  # debug
 
         llm_tokens = self.llm_tokenizer_for_generate(
             prompt,
@@ -340,14 +341,14 @@ class Blip2VicunaInstruct(Blip2Base):
             return_tensors="pt",
         ).to(image.device)
 
-        inputs_embeds = self.llm_model.get_input_embeddings()(llm_tokens.input_ids)
+        inputs_embeds = llm_model.get_input_embeddings()(llm_tokens.input_ids)
         inputs_embeds = torch.cat([inputs_llm, inputs_embeds], dim=1)
-        inputs_embeds = inputs_embeds.to(next(self.llm_model.parameters()).dtype)
+        inputs_embeds = inputs_embeds.to(next(llm_model.parameters()).dtype)
         attention_mask = torch.cat([atts_llm, llm_tokens.attention_mask], dim=1)
         inputs_embeds, attention_mask = self.shift_padding_to_left(inputs_embeds, attention_mask)
 
         with self.maybe_autocast():
-            outputs = self.llm_model.generate(
+            outputs = llm_model.generate(
                 inputs_embeds=inputs_embeds,
                 attention_mask=attention_mask,
                 do_sample=use_nucleus_sampling,
@@ -366,7 +367,7 @@ class Blip2VicunaInstruct(Blip2Base):
         output_text = self.llm_tokenizer_for_generate.batch_decode(outputs, skip_special_tokens=True)
         output_text = [text.strip() for text in output_text]
 
-        self.llm_model.config.pad_token_id = ori_pad_token_id
+        llm_model.config.pad_token_id = ori_pad_token_id
 
         return output_text
 
