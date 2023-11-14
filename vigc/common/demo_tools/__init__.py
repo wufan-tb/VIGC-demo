@@ -1,7 +1,6 @@
 from vigc.models import load_model_and_preprocess
 import torch
 import argparse
-from vigc.models.blip2_models.modeling_llama import LlamaForCausalLM
 
 MODEL_TYPE = "vicuna7b"
 MODEL_NAME = "blip2_vicuna_instruct"
@@ -132,38 +131,30 @@ def prepare_models(args):
     minigpt4_model.load_checkpoint(MODEL_CKPT["minigpt4"]["pretrained"])
     minigpt4_model.load_checkpoint(args.ckpt_minigpt4 or MODEL_CKPT["minigpt4"]["finetuned"])
 
-    print('Loading intruct blip...')
-
-    instruct_blip_model, instruct_blip_vis_processors, _ = load_model_and_preprocess(
-        name=MODEL_NAME,
-        model_type=MODEL_TYPE,
-        is_eval=True,
-        device=device,
-    )
-
-    instruct_blip_model.load_checkpoint(MODEL_CKPT["instruct_blip"]["pretrained"])
-    instruct_blip_model.load_checkpoint(args.ckpt_instruct_blip or MODEL_CKPT["instruct_blip"]["finetuned"])
-
-    print("Loading Vicuna7b...")
-    llm_model = LlamaForCausalLM.from_pretrained(
-        "/home/xlab-app-center/vicuna-7b", torch_dtype=torch.float16
-    )
-    llm_model.resize_token_embeddings(len(minigpt4_model.llm_tokenizer))
-
-    for name, param in llm_model.named_parameters():
-        param.requires_grad = False
-
-    llm_model = llm_model.eval()
-    llm_model = llm_model.to(device)
+    # print('Loading intruct blip...')
+    #
+    # instruct_blip_model, instruct_blip_vis_processors, _ = load_model_and_preprocess(
+    #     name=MODEL_NAME,
+    #     model_type=MODEL_TYPE,
+    #     is_eval=True,
+    #     device=device,
+    # )
+    #
+    # instruct_blip_model.load_checkpoint(MODEL_CKPT["instruct_blip"]["pretrained"])
+    # instruct_blip_model.load_checkpoint(args.ckpt_instruct_blip or MODEL_CKPT["instruct_blip"]["finetuned"])
+    #
+    # llm_model_to_del = instruct_blip_model.llm_model
+    # instruct_blip_model.llm_model = minigpt4_model.llm_model
+    # del llm_model_to_del
+    # torch.cuda.empty_cache()
 
     print('Loading model done!')
     res = {
         "device": device,
         "minigpt4_model": minigpt4_model,
-        "instruct_blip_model": instruct_blip_model,
+        "instruct_blip_model": minigpt4_model,
         "minigpt4_processors": minigpt4_processors,
-        "instruct_blip_vis_processors": instruct_blip_vis_processors,
-        "vicuna_llm": llm_model
+        "instruct_blip_vis_processors": minigpt4_processors
     }
     return res
 
@@ -173,7 +164,6 @@ def inference(all_elements):
     minigpt4_model = all_elements["minigpt4_model"]
     instruct_blip_model = all_elements["instruct_blip_model"]
     minigpt4_processors = all_elements["minigpt4_processors"]
-    llm_model = all_elements["vicuna_llm"]
     instruct_blip_vis_processors = all_elements["instruct_blip_vis_processors"]
 
     def _inner_f(
@@ -239,7 +229,6 @@ def inference(all_elements):
                 max_length=max_len_,
                 min_length=min_len,
                 temperature=temperature,
-                llm_model=llm_model
             )
             _update(all_res, answers, step=i, answer_length=answer_length, in_section=in_section,
                     last_infer_all=last_infer_all)
