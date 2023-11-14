@@ -155,8 +155,6 @@ def prepare_models(args):
 
     llm_model = llm_model.eval()
     llm_model = llm_model.to(device)
-    minigpt4_model.llm_model = llm_model
-    instruct_blip_model.llm_model = llm_model
 
     print('Loading model done!')
     res = {
