@@ -130,6 +130,9 @@ def prepare_models(args):
 
     minigpt4_model.load_checkpoint(MODEL_CKPT["minigpt4"]["pretrained"])
     minigpt4_model.load_checkpoint(args.ckpt_minigpt4 or MODEL_CKPT["minigpt4"]["finetuned"])
+    llm_model_to_del = minigpt4_model.llm_model
+    del llm_model_to_del
+    torch.cuda.empty_cache()
 
     print('Loading intruct blip...')
 
@@ -143,10 +146,7 @@ def prepare_models(args):
     instruct_blip_model.load_checkpoint(MODEL_CKPT["instruct_blip"]["pretrained"])
     instruct_blip_model.load_checkpoint(args.ckpt_instruct_blip or MODEL_CKPT["instruct_blip"]["finetuned"])
 
-    llm_model_to_del = instruct_blip_model.llm_model
-    instruct_blip_model.llm_model = minigpt4_model.llm_model
-    del llm_model_to_del
-    torch.cuda.empty_cache()
+    minigpt4_model.llm_model = instruct_blip_model.llm_model
 
     print('Loading model done!')
     res = {
