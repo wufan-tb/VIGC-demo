@@ -51,8 +51,7 @@ class Blip2VicunaInstruct(Blip2Base):
         super().__init__()
         transformers_version = version.parse(transformers.__version__)
         assert transformers_version >= version.parse("4.28"), "BLIP-2 Vicuna requires transformers>=4.28"
-        from transformers import LlamaTokenizer
-        from vigc.models.blip2_models.modeling_llama import LlamaForCausalLM
+        from transformers import LlamaTokenizer, LlamaConfig
 
         self.tokenizer = self.init_tokenizer(truncation_side="left")
 
@@ -90,9 +89,8 @@ class Blip2VicunaInstruct(Blip2Base):
         self.llm_tokenizer = LlamaTokenizer.from_pretrained(llm_model, use_fast=False, truncation_side="left")
         self.llm_tokenizer_for_generate = LlamaTokenizer.from_pretrained(llm_model, use_fast=False,
                                                                          truncation_side="left")
-        self.llm_model = LlamaForCausalLM.from_pretrained(
-            llm_model, torch_dtype=torch.float16
-        )
+        self.llm_model_cfg = LlamaConfig.from_pretrained(llm_model)
+
         self.llm_tokenizer.add_special_tokens({'pad_token': '[PAD]'})
         self.llm_tokenizer.add_special_tokens({'bos_token': '</s>'})
         self.llm_tokenizer.add_special_tokens({'eos_token': '</s>'})
@@ -103,17 +101,9 @@ class Blip2VicunaInstruct(Blip2Base):
         self.llm_tokenizer_for_generate.add_special_tokens({'bos_token': '</s>'})
         self.llm_tokenizer_for_generate.add_special_tokens({'eos_token': '</s>'})
         self.llm_tokenizer_for_generate.add_special_tokens({'unk_token': '</s>'})
-        self.llm_model.resize_token_embeddings(len(self.llm_tokenizer))
-
-        # self.eos_token_id = self.llm_tokenizer(
-        #     self.llm_tokenizer.eos_token, add_special_tokens=False
-        # ).input_ids[0]
-
-        for name, param in self.llm_model.named_parameters():
-            param.requires_grad = False
 
         self.llm_proj = nn.Linear(
-            self.Qformer.config.hidden_size, self.llm_model.config.hidden_size
+            self.Qformer.config.hidden_size, self.llm_model_cfg.hidden_size
         )
 
         self.max_txt_len = max_txt_len

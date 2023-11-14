@@ -1,6 +1,7 @@
 from vigc.models import load_model_and_preprocess
 import torch
 import argparse
+from vigc.models.blip2_models.modeling_llama import LlamaForCausalLM
 
 MODEL_TYPE = "vicuna7b"
 MODEL_NAME = "blip2_vicuna_instruct"
@@ -130,9 +131,6 @@ def prepare_models(args):
 
     minigpt4_model.load_checkpoint(MODEL_CKPT["minigpt4"]["pretrained"])
     minigpt4_model.load_checkpoint(args.ckpt_minigpt4 or MODEL_CKPT["minigpt4"]["finetuned"])
-    llm_model_to_del = minigpt4_model.llm_model
-    del llm_model_to_del
-    torch.cuda.empty_cache()
 
     print('Loading intruct blip...')
 
@@ -146,7 +144,19 @@ def prepare_models(args):
     instruct_blip_model.load_checkpoint(MODEL_CKPT["instruct_blip"]["pretrained"])
     instruct_blip_model.load_checkpoint(args.ckpt_instruct_blip or MODEL_CKPT["instruct_blip"]["finetuned"])
 
-    minigpt4_model.llm_model = instruct_blip_model.llm_model
+    print("Loading Vicuna7b...")
+    llm_model = LlamaForCausalLM.from_pretrained(
+        "/home/xlab-app-center/vicuna-7b", torch_dtype=torch.float16
+    )
+    llm_model.resize_token_embeddings(len(minigpt4_model.llm_tokenizer))
+
+    for name, param in llm_model.named_parameters():
+        param.requires_grad = False
+
+    llm_model = llm_model.eval()
+    llm_model = llm_model.to(device)
+    minigpt4_model.llm_model = llm_model
+    instruct_blip_model.llm_model = llm_model
 
     print('Loading model done!')
     res = {
