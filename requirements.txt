@@ -27,5 +27,5 @@ transformers>=4.28.0
 webdataset
 wheel
 peft
-gradio
+gradio==3.23.0
 openxlab
